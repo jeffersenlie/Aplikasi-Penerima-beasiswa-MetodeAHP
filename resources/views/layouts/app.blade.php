@@ -34,28 +34,40 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="nav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->is('criteria*', 'sub-criteria*') ? 'active fw-semibold' : '' }}"
-                            href="{{ route('criteria.index') }}">Kriteria</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->is('pairwise*') ? 'active fw-semibold' : '' }}"
-                            href="{{ route('pairwise.index') }}">Perbandingan</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->is('weights*') ? 'active fw-semibold' : '' }}"
-                            href="{{ route('weights.index') }}">Bobot</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->is('applicants*') ? 'active fw-semibold' : '' }}"
-                            href="{{ route('applicants.index') }}">Pendaftar</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->is('results*') ? 'active fw-semibold' : '' }}"
-                            href="{{ route('results.index') }}">Hasil</a>
-                    </li>
-                </ul>
+                @auth
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->is('criteria*', 'sub-criteria*') ? 'active fw-semibold' : '' }}"
+                                href="{{ route('criteria.index') }}">Kriteria</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->is('pairwise*') ? 'active fw-semibold' : '' }}"
+                                href="{{ route('pairwise.index') }}">Perbandingan</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->is('weights*') ? 'active fw-semibold' : '' }}"
+                                href="{{ route('weights.index') }}">Bobot</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->is('applicants*') ? 'active fw-semibold' : '' }}"
+                                href="{{ route('applicants.index') }}">Pendaftar</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->is('results*') ? 'active fw-semibold' : '' }}"
+                                href="{{ route('results.index') }}">Hasil</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->is('history*') ? 'active fw-semibold' : '' }}"
+                                href="{{ route('history.index') }}">Riwayat</a>
+                        </li>
+                        <li class="nav-item">
+                            <form method="POST" action="{{ route('logout') }}" class="d-flex">
+                                @csrf
+                                <button class="btn btn-link nav-link">Keluar ({{ auth()->user()->name }})</button>
+                            </form>
+                        </li>
+                    </ul>
+                @endauth
             </div>
         </div>
     </nav>
