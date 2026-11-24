@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Applicant;
 use App\Models\Category;
+use App\Models\Period;
 use App\Models\SubCriteria;
 use Illuminate\Database\Seeder;
 
@@ -55,9 +56,15 @@ class ApplicantSeeder extends Seeder
         ];
 
         $subs = SubCriteria::all()->keyBy('code');
+        $period = Period::where('year', 2019)->firstOrFail();
+        $no = 0;
 
         foreach ($data as $name => $values) {
-            $applicant = Applicant::create(['name' => $name]);
+            $applicant = Applicant::create([
+                'period_id'       => $period->id,
+                'registration_no' => sprintf('BM%d-%03d', $period->year, ++$no), // BM2019-001
+                'name'            => $name,
+            ]);
 
             foreach ($values as $code => $value) {
                 $sub = $subs[$code];

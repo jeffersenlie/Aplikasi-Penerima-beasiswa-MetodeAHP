@@ -16,12 +16,21 @@
             @endif
 
             <div class="card mb-3">
-                <div class="card-body">
-                    <label class="form-label fw-semibold" for="name">Nama pendaftar</label>
-                    <input type="text" id="name" name="name" maxlength="100"
-                           class="form-control @error('name') is-invalid @enderror"
-                           value="{{ old('name', $applicant->name) }}" required>
-                    @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                <div class="card-body row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold" for="registration_no">No. pendaftaran</label>
+                        <input type="text" id="registration_no" name="registration_no" maxlength="30"
+                               class="form-control @error('registration_no') is-invalid @enderror"
+                               value="{{ old('registration_no', $applicant->registration_no) }}" required>
+                        @error('registration_no') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label fw-semibold" for="name">Nama pendaftar</label>
+                        <input type="text" id="name" name="name" maxlength="100"
+                               class="form-control @error('name') is-invalid @enderror"
+                               value="{{ old('name', $applicant->name) }}" required>
+                        @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
                 </div>
             </div>
 

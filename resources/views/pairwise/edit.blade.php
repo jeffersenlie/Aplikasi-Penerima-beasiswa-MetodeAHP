@@ -72,7 +72,7 @@
                     @foreach (range(1, 9) as $n) <option value="{{ $n }}"></option> @endforeach
                 </datalist>
 
-                <div class="position-sticky bottom-0 bg-body py-3 border-top">
+                <div class="position-sticky bottom-0 bg-body py-3 border-top z-3">
                     <button class="btn btn-primary"><i class="bi bi-check-lg"></i> Simpan semua jawaban</button>
                     <a href="{{ route('pairwise.index') }}" class="btn btn-light">Batal</a>
                 </div>

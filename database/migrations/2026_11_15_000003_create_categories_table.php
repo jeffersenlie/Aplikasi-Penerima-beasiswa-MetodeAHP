@@ -13,8 +13,12 @@ return new class extends Migration
             $table->id();
             $table->foreignId('sub_criteria_id')->constrained('sub_criteria')->cascadeOnDelete();
             $table->string('name');
-            $table->unsignedInteger('order')->default(0); // 1 = paling layak
+            // Urutan tampilan saja (1 = ditampilkan pertama). Prioritas kategori
+            // TIDAK diambil dari kolom ini, tetapi dihitung dari pairwise_comparisons.
+            $table->unsignedInteger('order')->default(0);
             $table->timestamps();
+
+            $table->unique(['sub_criteria_id', 'name']);
         });
     }
 

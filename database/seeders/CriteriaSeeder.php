@@ -23,20 +23,20 @@ class CriteriaSeeder extends Seeder
                 ['C1.2', 'Penghasilan ibu', 'kuantitatif', 'cost', 'juta Rp/bulan', []],
             ]],
             ['C2', 'Rumah tinggal keluarga', [
-                ['C2.1', 'Kepemilikan rumah', 'kualitatif', 'benefit', null, ['Menumpang', 'Sewa/kontrak', 'Milik sendiri']],
+                ['C2.1', 'Kepemilikan rumah', 'kualitatif', null, null, ['Menumpang', 'Sewa/kontrak', 'Milik sendiri']],
                 ['C2.2', 'Sumber listrik', 'kuantitatif', 'cost', 'VA', []],
                 ['C2.3', 'Luas tanah', 'kuantitatif', 'cost', 'm²', []],
                 ['C2.4', 'Luas bangunan', 'kuantitatif', 'cost', 'm²', []],
-                ['C2.5', 'Sumber air', 'kualitatif', 'benefit', null, ['Sungai/mata air', 'Sumur', 'PDAM']],
+                ['C2.5', 'Sumber air', 'kualitatif', null, null, ['Sungai/mata air', 'Sumur', 'PDAM']],
                 ['C2.6', 'Jumlah orang tinggal', 'kuantitatif', 'benefit', 'orang', []],
             ]],
             ['C3', 'Pendidikan', [
-                ['C3.1', 'Prestasi akademik', 'kualitatif', 'benefit', null, $prestasi],
-                ['C3.2', 'Prestasi non-akademik', 'kualitatif', 'benefit', null, $prestasi],
+                ['C3.1', 'Prestasi akademik', 'kualitatif', null, null, $prestasi],
+                ['C3.2', 'Prestasi non-akademik', 'kualitatif', null, null, $prestasi],
             ]],
             ['C4', 'Pekerjaan orang tua', [
-                ['C4.1', 'Pekerjaan ayah', 'kualitatif', 'benefit', null, $pekerjaan],
-                ['C4.2', 'Pekerjaan ibu', 'kualitatif', 'benefit', null, $pekerjaan],
+                ['C4.1', 'Pekerjaan ayah', 'kualitatif', null, null, $pekerjaan],
+                ['C4.2', 'Pekerjaan ibu', 'kualitatif', null, null, $pekerjaan],
             ]],
         ];
 

@@ -17,6 +17,7 @@
                 <thead class="table-light">
                 <tr>
                     <th>Judul</th>
+                    <th>Periode</th>
                     <th>Waktu</th>
                     <th class="text-end">Pendaftar</th>
                     <th class="text-end">Kuota</th>
@@ -28,7 +29,8 @@
                 @foreach ($calculations as $c)
                     <tr>
                         <td class="fw-semibold">{{ $c->title }}</td>
-                        <td class="small text-muted">{{ $c->created_at->format('d M Y H:i') }}</td>
+                        <td>{{ $c->period?->name ?? '–' }}</td>
+                        <td class="small text-muted">{{ $c->created_at->translatedFormat('d M Y H:i') }}</td>
                         <td class="text-end">{{ $c->applicant_count }}</td>
                         <td class="text-end">{{ $c->quota }}</td>
                         <td>{{ $c->results->pluck('applicant_name')->implode(', ') }}</td>

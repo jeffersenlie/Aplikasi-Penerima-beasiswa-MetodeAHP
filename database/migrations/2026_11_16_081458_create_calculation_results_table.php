@@ -8,11 +8,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Hasil tiap pendaftar pada satu perhitungan. Nama & skor disalin (snapshot),
-        // jadi riwayat tidak berubah walau data pendaftar diedit atau dihapus.
+        // Hasil tiap pendaftar pada satu perhitungan. No. pendaftaran, nama & skor disalin
+        // (snapshot), jadi riwayat tidak berubah walau data pendaftar diedit atau dihapus.
         Schema::create('calculation_results', function (Blueprint $table) {
             $table->id();
             $table->foreignId('calculation_id')->constrained('calculations')->cascadeOnDelete();
+            // tautan ke pendaftar selama masih ada; NULL bila pendaftar dihapus (riwayat tetap utuh)
+            $table->foreignId('applicant_id')->nullable()->constrained('applicants')->nullOnDelete();
+            $table->string('registration_no', 30);
             $table->string('applicant_name');
             $table->decimal('score', 10, 6);
             $table->unsignedInteger('rank_no');

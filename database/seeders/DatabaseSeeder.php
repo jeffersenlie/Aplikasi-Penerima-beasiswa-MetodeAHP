@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             CriteriaSeeder::class,
             PairwiseSeeder::class,
+            PeriodSeeder::class,
             ApplicantSeeder::class,
         ]);
     }

@@ -86,7 +86,10 @@
             <div class="card mt-4">
                 <div class="card-body p-4">
                     <h2 class="h5 mb-1">Kategori</h2>
-                    <p class="text-muted small">Urutan <strong>1 = paling layak</strong> menerima beasiswa.</p>
+                    <p class="text-muted small">
+                        Urutan hanya untuk tampilan (disarankan 1 = paling layak). Tingkat kelayakan tiap kategori
+                        dihitung dari <a href="{{ route('pairwise.edit', ['level' => 'category', 'parent' => $sub->id]) }}">perbandingan berpasangan kategori</a>.
+                    </p>
 
                     <table class="table align-middle">
                         <thead class="table-light">

@@ -7,13 +7,17 @@ use App\Models\PairwiseComparison;
 use App\Models\SubCriteria;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller
 {
     public function store(Request $request, SubCriteria $subCriteria)
     {
         $data = $request->validate(
-            ['name' => ['required', 'string', 'max:100']],
+            ['name' => [
+                'required', 'string', 'max:100',
+                Rule::unique('categories', 'name')->where('sub_criteria_id', $subCriteria->id),
+            ]],
             [],
             ['name' => 'nama kategori']
         );
@@ -27,7 +31,12 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         $data = $request->validate([
-            'name'  => ['required', 'string', 'max:100'],
+            'name'  => [
+                'required', 'string', 'max:100',
+                Rule::unique('categories', 'name')
+                    ->where('sub_criteria_id', $category->sub_criteria_id)
+                    ->ignore($category->id),
+            ],
             'order' => ['required', 'integer', 'min:1'],
         ], [], [
             'name'  => 'nama kategori',

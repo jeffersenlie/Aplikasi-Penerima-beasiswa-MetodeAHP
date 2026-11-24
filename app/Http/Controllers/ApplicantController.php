@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Applicant;
 use App\Models\Criteria;
+use App\Models\Period;
 use App\Models\SubCriteria;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -19,21 +21,31 @@ class ApplicantController extends Controller
             ->select('sub_criteria.*')
             ->get();
 
-        $applicants = Applicant::with('values.category')->orderBy('name')->get();
+        // Hanya pendaftar pada periode aktif
+        $period = Period::active();
+        $applicants = $period
+            ? $period->applicants()->with('values.category')->orderBy('registration_no')->get()
+            : collect();
 
-        return view('applicants.index', compact('subs', 'applicants'));
+        return view('applicants.index', compact('subs', 'applicants', 'period'));
     }
 
     public function create()
     {
-        return $this->form(new Applicant());
+        return $this->form(new Applicant(['period_id' => $this->activePeriod()->id]));
     }
 
     public function store(Request $request)
     {
-        $applicant = DB::transaction(function () use ($request) {
-            $data = $this->validated($request);
-            $applicant = Applicant::create(['name' => $data['name']]);
+        $period = $this->activePeriod();
+
+        $applicant = DB::transaction(function () use ($request, $period) {
+            $data = $this->validated($request, $period->id);
+            $applicant = Applicant::create([
+                'period_id'       => $period->id,
+                'registration_no' => $data['registration_no'],
+                'name'            => $data['name'],
+            ]);
             $this->saveValues($applicant, $data['values']);
 
             return $applicant;
@@ -51,8 +63,11 @@ class ApplicantController extends Controller
     public function update(Request $request, Applicant $applicant)
     {
         DB::transaction(function () use ($request, $applicant) {
-            $data = $this->validated($request);
-            $applicant->update(['name' => $data['name']]);
+            $data = $this->validated($request, $applicant->period_id, $applicant->id);
+            $applicant->update([
+                'registration_no' => $data['registration_no'],
+                'name'            => $data['name'],
+            ]);
             $this->saveValues($applicant, $data['values']);
         });
 
@@ -85,10 +100,31 @@ class ApplicantController extends Controller
     }
 
     /** Aturan validasi dibentuk dari sub-kriteria yang ada di database (tidak hard-coded). */
-    private function validated(Request $request): array
+    /** Pendaftar baru selalu masuk ke periode aktif. */
+    private function activePeriod(): Period
     {
-        $rules = ['name' => ['required', 'string', 'max:100']];
-        $attributes = ['name' => 'nama pendaftar'];
+        $period = Period::active();
+
+        if (! $period) {
+            throw new HttpResponseException(
+                redirect()->route('periods.index')
+                    ->with('warning', 'Belum ada periode aktif. Buat atau aktifkan periode terlebih dahulu.')
+            );
+        }
+
+        return $period;
+    }
+
+    private function validated(Request $request, int $periodId, ?int $ignoreId = null): array
+    {
+        $rules = [
+            'registration_no' => [
+                'required', 'string', 'max:30',
+                Rule::unique('applicants', 'registration_no')->where('period_id', $periodId)->ignore($ignoreId),
+            ],
+            'name' => ['required', 'string', 'max:100'],
+        ];
+        $attributes = ['registration_no' => 'no. pendaftaran', 'name' => 'nama pendaftar'];
 
         foreach (SubCriteria::all() as $sub) {
             $key = "values.{$sub->id}";

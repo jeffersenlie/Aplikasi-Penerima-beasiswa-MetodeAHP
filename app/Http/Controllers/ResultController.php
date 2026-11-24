@@ -9,11 +9,10 @@ use Illuminate\Support\Facades\DB;
 
 class ResultController extends Controller
 {
-    public const DEFAULT_QUOTA = 2;
-
     public function index(Request $request, ResultService $results)
     {
-        $quota = (int) $request->query('quota', self::DEFAULT_QUOTA);
+        // Tanpa ?quota= dipakai kuota periode aktif; ?quota= untuk simulasi
+        $quota = $request->filled('quota') ? (int) $request->query('quota') : null;
 
         return view('results.index', ['result' => $results->compute($quota)]);
     }
@@ -35,9 +34,14 @@ class ResultController extends Controller
         $calculation = DB::transaction(function () use ($request, $data, $result) {
             $calculation = Calculation::create([
                 'user_id'         => $request->user()->id,
+                'period_id'       => $result['period']->id,
                 'title'           => $data['title'],
                 'quota'           => $result['quota'],
                 'applicant_count' => count($result['ranking']),
+                'consistency'     => $result['groups']->map(fn ($g) => [
+                    'title' => $g['title'],
+                    'cr'    => $g['cr'] !== null ? round($g['cr'], 6) : null,
+                ])->values()->all(),
                 'weights'         => collect($result['subs'])->map(fn ($r) => [
                     'code'   => $r['sub']->code,
                     'name'   => $r['sub']->name,
@@ -49,7 +53,9 @@ class ResultController extends Controller
                 $id = $row['applicant']->id;
 
                 $calculation->results()->create([
-                    'applicant_name' => $row['applicant']->name,
+                    'applicant_id'    => $id,
+                    'registration_no' => $row['applicant']->registration_no,
+                    'applicant_name'  => $row['applicant']->name,
                     'score'          => $row['score'],
                     'rank_no'        => $row['rank'],
                     'eligible'       => $row['eligible'],

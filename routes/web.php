@@ -6,6 +6,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CriteriaController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\PairwiseController;
+use App\Http\Controllers\PeriodController;
 use App\Http\Controllers\ResultController;
 use App\Http\Controllers\SubCriteriaController;
 use App\Http\Controllers\WeightController;
@@ -53,6 +54,10 @@ Route::middleware('auth')->group(function () {
 
     // Ringkasan bobot (kriteria, lokal, global)
     Route::get('weights', [WeightController::class, 'index'])->name('weights.index');
+
+    // Periode seleksi (hanya satu yang aktif)
+    Route::resource('periods', PeriodController::class)->except(['show']);
+    Route::post('periods/{period}/activate', [PeriodController::class, 'activate'])->name('periods.activate');
 
     // Pendaftar (alternatif) + nilai tiap sub-kriteria
     Route::resource('applicants', ApplicantController::class)->except(['show']);

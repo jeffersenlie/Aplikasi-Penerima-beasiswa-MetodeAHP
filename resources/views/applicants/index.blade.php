@@ -6,12 +6,23 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
     <div>
         <h1 class="h3 mb-1">Pendaftar Beasiswa</h1>
-        <p class="text-muted mb-0">{{ $applicants->count() }} pendaftar · {{ $subs->count() }} sub-kriteria dinilai</p>
+        <p class="text-muted mb-0">
+            @if ($period)
+                Periode <strong>{{ $period->name }}</strong> (kuota {{ $period->quota }}) ·
+            @endif
+            {{ $applicants->count() }} pendaftar · {{ $subs->count() }} sub-kriteria dinilai
+        </p>
     </div>
-    <a href="{{ route('applicants.create') }}" class="btn btn-primary">
-        <i class="bi bi-person-plus"></i> Tambah Pendaftar
-    </a>
+    @if ($period)
+        <a href="{{ route('applicants.create') }}" class="btn btn-primary">
+            <i class="bi bi-person-plus"></i> Tambah Pendaftar
+        </a>
+    @endif
 </div>
+
+@unless ($period)
+    <div class="alert alert-warning">Belum ada periode aktif. Pendaftar hanya dapat ditambahkan ke periode yang aktif.</div>
+@endunless
 
 <div class="card">
     @if ($applicants->isEmpty())
@@ -23,7 +34,8 @@
             <table class="table table-hover table-sm align-middle mb-0 small">
                 <thead class="table-light">
                 <tr>
-                    <th class="ps-3">Nama</th>
+                    <th class="ps-3">No. Daftar</th>
+                    <th>Nama</th>
                     @foreach ($subs as $sub)
                         <th class="text-center text-nowrap" title="{{ $sub->name }}">
                             {{ $sub->code }}<br>
@@ -37,7 +49,8 @@
                 @foreach ($applicants as $applicant)
                     @php($values = $applicant->values->keyBy('sub_criteria_id'))
                     <tr>
-                        <td class="ps-3 fw-semibold text-nowrap">
+                        <td class="ps-3 text-nowrap text-muted">{{ $applicant->registration_no }}</td>
+                        <td class="fw-semibold text-nowrap">
                             {{ $applicant->name }}
                             @if ($values->count() < $subs->count())
                                 <span class="badge text-bg-warning" title="Ada sub-kriteria yang belum diisi">belum lengkap</span>

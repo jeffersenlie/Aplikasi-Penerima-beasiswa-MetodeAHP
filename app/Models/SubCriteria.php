@@ -22,6 +22,12 @@ class SubCriteria extends Model
         return $this->hasMany(Category::class)->orderBy('order');
     }
 
+    /** Nilai semua pendaftar pada sub-kriteria ini. */
+    public function applicantValues(): HasMany
+    {
+        return $this->hasMany(ApplicantValue::class);
+    }
+
     public function isQualitative(): bool
     {
         return $this->type === 'kualitatif';

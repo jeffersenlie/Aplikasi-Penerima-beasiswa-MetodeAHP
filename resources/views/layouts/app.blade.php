@@ -49,6 +49,16 @@
                                 href="{{ route('weights.index') }}">Bobot</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {{ request()->is('periods*') ? 'active fw-semibold' : '' }}"
+                                href="{{ route('periods.index') }}">
+                                Periode
+                                @php($activePeriod = \App\Models\Period::active())
+                                <span class="badge {{ $activePeriod ? 'text-bg-light' : 'text-bg-warning' }}">
+                                    {{ $activePeriod?->year ?? 'belum ada' }}
+                                </span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {{ request()->is('applicants*') ? 'active fw-semibold' : '' }}"
                                 href="{{ route('applicants.index') }}">Pendaftar</a>
                         </li>

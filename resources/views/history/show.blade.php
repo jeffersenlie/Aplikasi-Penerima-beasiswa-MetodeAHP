@@ -8,9 +8,19 @@
 <a href="{{ route('history.index') }}" class="small"><i class="bi bi-arrow-left"></i> Kembali ke riwayat</a>
 <h1 class="h3 mt-2 mb-1">{{ $calculation->title }}</h1>
 <p class="text-muted">
-    Dihitung {{ $calculation->created_at->format('d M Y H:i') }} ·
+    Periode {{ $calculation->period?->name ?? '–' }} ·
+    dihitung {{ $calculation->created_at->translatedFormat('d M Y H:i') }} ·
     kuota {{ $calculation->quota }} · {{ $calculation->applicant_count }} pendaftar
 </p>
+
+@if (! empty($calculation->consistency))
+    <p class="small text-muted mb-3">
+        <i class="bi bi-check2-circle"></i> Konsistensi saat dihitung:
+        @foreach ($calculation->consistency as $c)
+            {{ $c['title'] }} CR {{ $c['cr'] !== null ? $fmt($c['cr']) : '–' }}@unless ($loop->last) · @endunless
+        @endforeach
+    </p>
+@endif
 
 <div class="card mb-4">
     <div class="table-responsive">
@@ -27,7 +37,10 @@
             @foreach ($calculation->results as $r)
                 <tr class="{{ $r->eligible ? 'table-success' : '' }}">
                     <td class="fw-bold">{{ $r->rank_no }}</td>
-                    <td class="fw-semibold">{{ $r->applicant_name }}</td>
+                    <td class="fw-semibold">
+                        {{ $r->applicant_name }}
+                        <span class="text-muted fw-normal small">{{ $r->registration_no }}</span>
+                    </td>
                     <td class="text-end font-monospace">{{ $fmt($r->score) }}</td>
                     <td class="text-center">
                         <span class="badge {{ $r->eligible ? 'text-bg-success' : 'text-bg-secondary' }}">

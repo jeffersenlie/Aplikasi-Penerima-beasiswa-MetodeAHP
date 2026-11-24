@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\Applicant;
+use App\Models\Period;
 use App\Models\SubCriteria;
 use Illuminate\Support\Collection;
 
@@ -18,7 +18,8 @@ class ResultService
     ) {
     }
 
-    public function compute(int $quota = 2): array
+    /** Hitung ranking pendaftar periode aktif. Kuota default = kuota periode. */
+    public function compute(?int $quota = null): array
     {
         $groups = collect($this->pairwise->groups());
 
@@ -27,14 +28,25 @@ class ResultService
             ->values();
         $incomplete = $groups->filter(fn ($g) => $g['filled'] < $g['total'])->values();
 
-        $applicants = Applicant::with('values')->orderBy('id')->get();
-        $quota = max(1, min($quota, max($applicants->count(), 1)));
+        $period = Period::active();
+        $applicants = $period
+            ? $period->applicants()->with('values')->orderBy('id')->get()
+            : collect();
+        $quota = max(1, min($quota ?? $period?->quota ?? 1, max($applicants->count(), 1)));
+
+        // Pendaftar yang belum mengisi semua sub-kriteria (mis. setelah sub-kriteria baru ditambahkan).
+        // Nilai kosong: kuantitatif dianggap 0, kualitatif dianggap kategori paling tidak layak.
+        $subCount = SubCriteria::count();
+        $missingValues = $applicants->filter(fn ($a) => $a->values->count() < $subCount)->values();
 
         $result = [
+            'missing_values' => $missingValues,
+            'period'       => $period,
             'quota'        => $quota,
             'blocked'      => $inconsistent->isNotEmpty(),
             'inconsistent' => $inconsistent,
             'incomplete'   => $incomplete,
+            'groups'       => $groups,
             'applicants'   => $applicants,
             'subs'         => [],
             'ranking'      => [],

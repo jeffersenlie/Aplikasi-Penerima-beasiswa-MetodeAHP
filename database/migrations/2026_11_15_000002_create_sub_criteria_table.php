@@ -14,10 +14,10 @@ return new class extends Migration
             $table->string('code', 10)->unique();      // C1.1, C1.2, ...
             $table->string('name');
             $table->enum('type', ['kuantitatif', 'kualitatif']);
-            // benefit = makin besar makin layak, cost = makin kecil makin layak
-            // (hanya dipakai untuk sub-kriteria kuantitatif)
-            $table->enum('direction', ['benefit', 'cost'])->default('benefit');
-            $table->string('unit')->nullable();        // juta Rp/bulan, m², VA, orang
+            // Khusus kuantitatif: benefit = makin besar makin layak, cost = makin kecil makin layak.
+            // Kualitatif = NULL, karena prioritasnya ditentukan pairwise antar-kategori.
+            $table->enum('direction', ['benefit', 'cost'])->nullable();
+            $table->string('unit')->nullable();        // khusus kuantitatif: juta Rp/bulan, m², VA, orang
             $table->unsignedInteger('order')->default(0);
             $table->timestamps();
         });

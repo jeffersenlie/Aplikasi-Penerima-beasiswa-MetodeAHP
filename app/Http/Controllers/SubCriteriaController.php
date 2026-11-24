@@ -46,10 +46,32 @@ class SubCriteriaController extends Controller
 
     public function update(Request $request, SubCriteria $subCriteria)
     {
-        $subCriteria->update($this->validated($request, $subCriteria->id));
+        $data = $this->validated($request, $subCriteria->id);
+        $typeChanged = $data['type'] !== $subCriteria->type;
 
-        return redirect()->route('criteria.index')
-            ->with('success', "Sub-kriteria {$subCriteria->code} berhasil diperbarui.");
+        DB::transaction(function () use ($subCriteria, $data, $typeChanged) {
+            if ($typeChanged) {
+                // Nilai pendaftar lama tidak cocok dengan jenis baru (angka vs kategori) -> hapus,
+                // pendaftar akan tampil "belum lengkap" dan perlu diisi ulang.
+                $subCriteria->applicantValues()->delete();
+
+                // Kuantitatif tidak memakai kategori: hapus kategori beserta perbandingannya
+                if ($data['type'] === 'kuantitatif') {
+                    PairwiseComparison::purgeChildren('category', [$subCriteria->id]);
+                    $subCriteria->categories()->delete();
+                }
+            }
+
+            $subCriteria->update($data);
+        });
+
+        $redirect = redirect()->route($subCriteria->isQualitative() && $typeChanged ? 'sub-criteria.edit' : 'criteria.index',
+            $subCriteria->isQualitative() && $typeChanged ? $subCriteria : []);
+
+        return $typeChanged
+            ? $redirect->with('warning', "Jenis data {$subCriteria->code} diubah. Nilai pendaftar untuk sub-kriteria ini dihapus; "
+                . 'isi ulang di menu Pendaftar' . ($subCriteria->isQualitative() ? ' setelah kategori ditambahkan.' : '.'))
+            : $redirect->with('success', "Sub-kriteria {$subCriteria->code} berhasil diperbarui.");
     }
 
     public function destroy(SubCriteria $subCriteria)
@@ -81,9 +103,9 @@ class SubCriteriaController extends Controller
             'unit'      => 'satuan',
         ]);
 
-        // Sub-kriteria kualitatif dinilai lewat urutan kategori, tidak memakai arah & satuan
+        // Sub-kriteria kualitatif dinilai lewat pairwise antar-kategori, tidak memakai arah & satuan
         if ($data['type'] === 'kualitatif') {
-            $data['direction'] = 'benefit';
+            $data['direction'] = null;
             $data['unit'] = null;
         }
 

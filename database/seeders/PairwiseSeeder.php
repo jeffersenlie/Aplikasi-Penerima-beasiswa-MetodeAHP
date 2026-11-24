@@ -12,6 +12,17 @@ use Illuminate\Database\Seeder;
  * - Kriteria & sub-kriteria: dari artikel (Tabel 4–8), segitiga atas matriks.
  * - Kategori: default kelompok (selisih 1 peringkat = 3, 2 = 5, 3 = 7, 4 = 9),
  *   karena artikel tidak memuatnya. Semua nilai bisa diubah lewat aplikasi.
+ *
+ * Catatan perbandingan dengan artikel (sudah diverifikasi):
+ * - Artikel menghitung bobot dengan normalisasi kolom (rata-rata baris), sedangkan
+ *   aplikasi memakai eigenvector (pengkuadratan matriks, sesuai materi kuliah).
+ *   Karena itu bobot aplikasi sedikit berbeda, mis. Ekonomi 0,4405 vs 0,4389.
+ *   Bila Tabel 4 dihitung dengan normalisasi kolom, hasilnya persis sama dengan artikel.
+ * - Tabel 6 artikel tidak resiprokal pada 2 pasangan (kemungkinan salah ketik):
+ *   Listrik–Jumlah orang 0,3813 (atas) vs 2,8845 (bawah, seharusnya 2,6226) dan
+ *   Luas tanah–Jumlah orang 3,1748 (atas) vs 0,3969 (bawah, seharusnya 0,3150).
+ *   Seeder memakai segitiga atas, jadi bobot Jumlah orang tinggal 0,0959 (artikel 0,1020).
+ *   CR tetap 0,0112 < 0,1 (konsisten).
  */
 class PairwiseSeeder extends Seeder
 {

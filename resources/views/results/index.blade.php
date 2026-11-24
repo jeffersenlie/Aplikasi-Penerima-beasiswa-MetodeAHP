@@ -7,10 +7,17 @@
 @section('content')
 <h1 class="h3 mb-1">Hasil Seleksi</h1>
 <p class="text-muted">
+    @if ($result['period'])
+        Periode <strong>{{ $result['period']->name }}</strong> (kuota periode {{ $result['period']->quota }}) ·
+    @endif
     Skor = Σ (prioritas lokal pendaftar × bobot global sub-kriteria). Total skor semua pendaftar = 1.
 </p>
 
-@if ($result['blocked'])
+@if (! $result['period'])
+    <div class="alert alert-warning">
+        Belum ada periode aktif. Buat atau aktifkan periode di menu <a href="{{ route('periods.index') }}">Periode</a>.
+    </div>
+@elseif ($result['blocked'])
     <div class="alert alert-danger">
         <h2 class="h6"><i class="bi bi-x-octagon"></i> Hasil belum dapat ditampilkan</h2>
         <p class="mb-2">
@@ -36,6 +43,15 @@
         <i class="bi bi-exclamation-triangle"></i>
         Beberapa perbandingan belum diisi (dianggap sama penting):
         {{ $result['incomplete']->pluck('title')->implode(', ') }}.
+    </div>
+@endif
+@if ($result['missing_values']->isNotEmpty())
+    <div class="alert alert-warning">
+        <i class="bi bi-exclamation-triangle"></i>
+        {{ $result['missing_values']->count() }} pendaftar belum lengkap nilainya
+        ({{ $result['missing_values']->pluck('name')->implode(', ') }}).
+        Nilai kosong dianggap 0 / kategori paling tidak layak. Lengkapi di menu
+        <a href="{{ route('applicants.index') }}">Pendaftar</a> sebelum menyimpan hasil.
     </div>
 @endif
 

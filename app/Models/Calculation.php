@@ -8,13 +8,21 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Calculation extends Model
 {
-    protected $fillable = ['user_id', 'title', 'quota', 'applicant_count', 'weights'];
+    protected $fillable = ['user_id', 'period_id', 'title', 'quota', 'applicant_count', 'weights', 'consistency'];
 
-    protected $casts = ['weights' => 'array'];
+    protected $casts = [
+        'weights'     => 'array',
+        'consistency' => 'array',
+    ];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function period(): BelongsTo
+    {
+        return $this->belongsTo(Period::class);
     }
 
     public function results(): HasMany

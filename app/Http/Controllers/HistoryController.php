@@ -10,7 +10,7 @@ class HistoryController extends Controller
     public function index(Request $request)
     {
         $calculations = Calculation::where('user_id', $request->user()->id)
-            ->with(['results' => fn ($q) => $q->where('eligible', true)])
+            ->with(['period', 'results' => fn ($q) => $q->where('eligible', true)])
             ->latest()
             ->get();
 
@@ -21,7 +21,7 @@ class HistoryController extends Controller
     {
         abort_unless($calculation->user_id === $request->user()->id, 403);
 
-        $calculation->load('results');
+        $calculation->load(['period', 'results']);
 
         return view('history.show', compact('calculation'));
     }
